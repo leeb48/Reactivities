@@ -23,14 +23,13 @@ namespace Application.Activities
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-
                 var activity = await _context.Activities.FindAsync(request.Id);
+                if (activity != null)
+                {
+                    _context.Activities.Remove(activity);
 
-
-                _context.Activities.Remove(activity);
-
-                await _context.SaveChangesAsync();
-
+                    await _context.SaveChangesAsync();
+                }
                 return Unit.Value;
             }
         }
