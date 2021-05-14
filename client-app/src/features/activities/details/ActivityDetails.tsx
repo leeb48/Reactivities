@@ -1,15 +1,17 @@
 import { Activity } from 'app/models/activity';
 import React from 'react';
-import { Button, Card, Icon, Image } from 'semantic-ui-react';
+import { Button, Card, Image } from 'semantic-ui-react';
 
 interface Props {
   activity: Activity;
   cancleSelectActivity: () => void;
+  openForm: (id: string) => void;
 }
 
 const ActivityDetails: React.FC<Props> = ({
   activity,
   cancleSelectActivity,
+  openForm,
 }) => {
   return (
     <Card fluid>
@@ -25,7 +27,12 @@ const ActivityDetails: React.FC<Props> = ({
       </Card.Content>
       <Card.Content extra>
         <Button.Group widths="2">
-          <Button basic color="blue" content="Edit" />
+          <Button
+            onClick={() => openForm(activity.id)}
+            basic
+            color="blue"
+            content="Edit"
+          />
           <Button
             onClick={cancleSelectActivity}
             basic
