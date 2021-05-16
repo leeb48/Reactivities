@@ -92,4 +92,21 @@ export default class ActivityStore {
       this.setLoading(false);
     }
   };
+
+  deleteActivity = async (id: string) => {
+    this.setLoading(true);
+
+    try {
+      await agent.Activities.delete(id);
+
+      runInAction(() => {
+        this.activities = this.activities.filter((a) => a.id !== id);
+      });
+
+      this.setLoading(false);
+    } catch (error) {
+      console.log(error);
+      this.setLoading(false);
+    }
+  };
 }
