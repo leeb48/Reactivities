@@ -1,17 +1,16 @@
 import { Activity } from 'app/models/activity';
+import { useStore } from 'app/stores/store';
 import React, { useState } from 'react';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
 
 interface Props {
   activities: Activity[];
-  selectActivity: (id: string) => void;
   deleteActivity: (id: string) => void;
   submitting: boolean;
 }
 
 const ActivityList: React.FC<Props> = ({
   activities,
-  selectActivity,
   deleteActivity,
   submitting,
 }) => {
@@ -24,6 +23,9 @@ const ActivityList: React.FC<Props> = ({
     setTarget(e.currentTarget.name);
     deleteActivity(id);
   }
+
+  const { activityStore } = useStore();
+  const { selectActivity } = activityStore;
 
   return (
     <Segment>
