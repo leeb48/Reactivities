@@ -1,6 +1,5 @@
 import { Activity } from 'app/models/activity';
 import axios, { AxiosResponse } from 'axios';
-import { request } from 'node:http';
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -38,7 +37,7 @@ const Activities = {
   create: (activity: Activity) => requests.post<void>('/activities', activity),
   update: (activity: Activity) =>
     requests.put<void>(`/activities/${activity.id}`, activity),
-  delete: (id: string) => requests.del<void>(`/activity/${id}`),
+  delete: (id: string) => requests.del<void>(`/activities/${id}`),
 };
 
 const agent = {
