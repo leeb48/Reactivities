@@ -1,4 +1,6 @@
 using API.Extensions;
+using Application.Activities;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +24,12 @@ namespace API
         // Add in services that can be injected to other classes
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation(config =>
+            {
+                // Only have to do once for all of the handlers, as long as we specifiy a class
+                // that lives inside the application project
+                config.RegisterValidatorsFromAssemblyContaining<Create>();
+            });
 
             services.AddApplicationServices(_config);
         }
