@@ -1,3 +1,4 @@
+import TestErrors from 'features/errors/TestError';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Button, Container, Menu } from 'semantic-ui-react';
@@ -16,6 +17,7 @@ const Navbar = () => {
             Reactivities
           </Menu.Item>
           <Menu.Item as={NavLink} exact to="/activities" name="Activities" />
+          <Menu.Item as={NavLink} exact to="/errors" name="Test Errors" />
           <Menu.Item>
             <Button
               as={NavLink}

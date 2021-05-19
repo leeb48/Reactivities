@@ -1,4 +1,5 @@
 using API.Extensions;
+using API.Middleware;
 using Application.Activities;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -38,9 +39,11 @@ namespace API
         // Add middleware here
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Exception handling should be at the start of the middleware pipeline
+            app.UseMiddleware<ExceptionMiddleware>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }

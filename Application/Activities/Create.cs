@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using Domain;
 using FluentValidation;
 using MediatR;
@@ -9,7 +10,7 @@ namespace Application.Activities
 {
     public class Create
     {
-        public class Command : IRequest
+        public class Command : IRequest<Result<Unit>>
         {
             public Activity Activity { get; set; }
         }
@@ -22,7 +23,7 @@ namespace Application.Activities
             }
         }
 
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
             public Handler(DataContext context)
@@ -31,16 +32,19 @@ namespace Application.Activities
 
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // only adding it to memory, not the database yet so no async method is needed
                 _context.Activities.Add(request.Activity);
 
-                await _context.SaveChangesAsync();
+                // SaveChangesAsync returns an integer that represents the number of changes made in the DB
+                var result = await _context.SaveChangesAsync() > 0;
+
+                if (!result) return Result<Unit>.Failure("Failed to create activity");
 
                 // this is like returning void
                 // it signals to API controller that the command request has finished
-                return Unit.Value;
+                return Result<Unit>.Success(Unit.Value);
             }
         }
     }
