@@ -1,13 +1,16 @@
 import { createContext, useContext } from 'react';
 import ActivityStore from './activityStore';
+import CommonStore from './commonStore';
 
 interface Store {
   activityStore: ActivityStore;
+  commonStore: CommonStore;
 }
 
 // Add new instances of stores here
 export const store: Store = {
   activityStore: new ActivityStore(),
+  commonStore: new CommonStore(),
 };
 
 // Create a context so that components can access the store

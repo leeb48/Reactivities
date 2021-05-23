@@ -1,11 +1,13 @@
 import ActivityDashboard from 'features/activities/dashboard/ActivityDashboard';
 import ActivityDetails from 'features/activities/details/ActivityDetails';
 import ActivityForm from 'features/activities/form/ActivityForm';
+import NotFound from 'features/errors/NotFound';
+import ServerError from 'features/errors/ServerError';
 import TestErrors from 'features/errors/TestError';
 import HomePage from 'features/home/HomePage';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { Route, useLocation } from 'react-router';
+import { Route, Switch, useLocation } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import { Container } from 'semantic-ui-react';
 import Navbar from './Navbar';
@@ -23,16 +25,24 @@ function App() {
           <>
             <Navbar />
             <Container style={{ marginTop: '7em' }}>
-              <Route path="/" exact component={HomePage} />
-              <Route path="/activities" exact component={ActivityDashboard} />
-              <Route path="/activities/:id" exact component={ActivityDetails} />
-              <Route
-                key={location.key}
-                path={['/createActivity', '/manage/:id']}
-                exact
-                component={ActivityForm}
-              />
-              <Route path="/errors" exact component={TestErrors} />
+              <Switch>
+                <Route path="/" exact component={HomePage} />
+                <Route path="/activities" exact component={ActivityDashboard} />
+                <Route
+                  path="/activities/:id"
+                  exact
+                  component={ActivityDetails}
+                />
+                <Route
+                  key={location.key}
+                  path={['/createActivity', '/manage/:id']}
+                  exact
+                  component={ActivityForm}
+                />
+                <Route path="/errors" exact component={TestErrors} />
+                <Route path="/server-error" exact component={ServerError} />
+                <Route component={NotFound} />
+              </Switch>
             </Container>
           </>
         )}
