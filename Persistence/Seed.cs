@@ -18,13 +18,14 @@ namespace Persistence
                 {
                     new AppUser{DisplayName = "Bob", UserName="bob", Email="bob@test.com"},
                     new AppUser{DisplayName = "Tom", UserName="tom", Email="tom@test.com"},
-                    new AppUser{DisplayName = "Jane", UserName="jane", Email="jane@test.com"}
+                    new AppUser{DisplayName = "Jane", UserName="jane", Email="jane@test.com"},
+                    new AppUser{DisplayName = "Mango", UserName="mango", Email="mango@test.com"}
                 };
 
                 foreach (var user in users)
                 {
                     // Creates the users in the DB directly, don't need to save
-                    await userManager.CreateAsync(user, "123456");
+                    await userManager.CreateAsync(user, "Pa$$w0rd");
                 }
             }
 
