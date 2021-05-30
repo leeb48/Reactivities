@@ -2,8 +2,10 @@ using API.Extensions;
 using API.Middleware;
 using Application.Activities;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +27,14 @@ namespace API
         // Add in services that can be injected to other classes
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddFluentValidation(config =>
+            services.AddControllers(opt =>
+            {
+                // Make sure every single endpoint in the api requires authentication
+                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+                opt.Filters.Add(new AuthorizeFilter(policy));
+            })
+            .AddFluentValidation(config =>
             {
                 // Only have to do once for all of the handlers, as long as we specifiy a class
                 // that lives inside the application project
@@ -55,6 +64,9 @@ namespace API
 
             // cors header is added on the way back out to the client
             app.UseCors("CorsPolicy");
+
+            // Authenitcation must go right before authorization
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
