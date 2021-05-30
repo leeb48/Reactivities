@@ -38,7 +38,7 @@ namespace API
             {
                 // Only have to do once for all of the handlers, as long as we specifiy a class
                 // that lives inside the application project
-                config.RegisterValidatorsFromAssemblyContaining<Create>();
+                config.RegisterValidatorsFromAssemblyContaining<ActivityValidator>();
             });
 
             services.AddApplicationServices(_config);
