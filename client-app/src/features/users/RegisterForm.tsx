@@ -4,7 +4,7 @@ import ValidationErrors from 'features/errors/ValidationErrors';
 import { ErrorMessage, Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { Button, Header, Label } from 'semantic-ui-react';
+import { Button, Header } from 'semantic-ui-react';
 import * as Yup from 'yup';
 
 const RegisterForm = () => {
