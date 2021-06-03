@@ -6,17 +6,21 @@ namespace Persistence
 {
     public class DataContext : IdentityDbContext<AppUser>
     {
+        // Call the parent's constructor using base(options)
         public DataContext(DbContextOptions options) : base(options)
         {
         }
+
+        // The implemented DataContext can access all the DbSet initialized here
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Overide how ActivityAttendee's primary key will be generated
+            // Configure how ActivityAttendee's primary key will be generated
             builder.Entity<ActivityAttendee>(x => x.HasKey(aa => new { aa.AppUserId, aa.ActivityId }));
 
             // Configuration for many to many relationship
