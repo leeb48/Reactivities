@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
@@ -51,7 +52,6 @@ namespace Application.Activities
                     Activity = request.Activity,
                     IsHost = true
                 };
-
 
                 request.Activity.Attendees.Add(hostAttendee);
 
