@@ -4,7 +4,7 @@ import MyTextArea from 'app/common/form/MyTextArea';
 import MyTextInput from 'app/common/form/MyTextInput';
 import { categoryOptions } from 'app/common/options/categoryOptions';
 import LoadingComponent from 'app/layout/LoadingComponent';
-import { Activity } from 'app/models/activity';
+import { ActivityFormValues } from 'app/models/activity';
 import { useStore } from 'app/stores/store';
 import { Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
@@ -17,27 +17,16 @@ import * as Yup from 'yup';
 
 const ActivityForm = () => {
   const { activityStore } = useStore();
-  const {
-    loading,
-    createActivity,
-    updateActivity,
-    loadActivity,
-    loadingInitial,
-  } = activityStore;
+  const { createActivity, updateActivity, loadActivity, loadingInitial } =
+    activityStore;
 
   const { id } = useParams<{ id: string }>();
 
   const history = useHistory();
 
-  const [activity, setActivity] = useState<Activity>({
-    id: '',
-    title: '',
-    category: '',
-    description: '',
-    date: null,
-    city: '',
-    venue: '',
-  });
+  const [activity, setActivity] = useState<ActivityFormValues>(
+    new ActivityFormValues()
+  );
 
   const validationSchema = Yup.object({
     title: Yup.string().required('The activity title is required'),
@@ -49,12 +38,15 @@ const ActivityForm = () => {
   });
 
   useEffect(() => {
-    if (id) loadActivity(id).then((activity) => setActivity(activity!));
+    if (id)
+      loadActivity(id).then((activity) =>
+        setActivity(new ActivityFormValues(activity))
+      );
   }, [id, loadActivity]);
 
-  async function handleFormSubmit(activity: Activity) {
-    if (activity.id.length === 0) {
-      let newActivity = {
+  async function handleFormSubmit(activity: ActivityFormValues) {
+    if (!activity.id) {
+      const newActivity = {
         ...activity,
         id: uuid(),
       };
@@ -101,7 +93,7 @@ const ActivityForm = () => {
             <Button
               // Dirty is true if user has changed the form values
               disabled={isSubmitting || !dirty || !isValid}
-              loading={loading}
+              loading={isSubmitting}
               floated="right"
               positive
               type="submit"
