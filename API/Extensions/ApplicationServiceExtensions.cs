@@ -1,5 +1,6 @@
 using Application.Activities;
 using Application.Interfaces;
+using Infrastructure.Photos;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,10 @@ namespace API.Extensions
 
             // This service is scoped to per http request
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+
+            // Use CloudinarySettings class to access settings set in application.json
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
             return services;
         }
