@@ -53,6 +53,7 @@ const PhotoUploadWidget: React.FC<Props> = ({ loading, uploadPhoto }) => {
             <Button.Group widths={2}>
               <Button
                 loading={loading}
+                disabled={loading}
                 onClick={onCrop}
                 positive
                 icon="check"
