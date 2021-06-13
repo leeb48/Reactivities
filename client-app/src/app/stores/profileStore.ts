@@ -80,6 +80,22 @@ export default class ProfileStore {
 
           this.profile.image = photo.url;
 
+          // Update photos in the dashboard and attendee list
+          store.activityStore.activityRegistry.forEach((activity) => {
+            if (
+              activity.host &&
+              activity.host?.username === this.profile?.username
+            ) {
+              activity.host.image = photo.url;
+
+              activity.attendees.forEach((attendee) => {
+                if (attendee.username === this.profile?.username) {
+                  attendee.image = photo.url;
+                }
+              });
+            }
+          });
+
           this.loading = false;
         }
       });
