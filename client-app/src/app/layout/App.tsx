@@ -7,6 +7,7 @@ import NotFound from 'features/errors/NotFound';
 import ServerError from 'features/errors/ServerError';
 import TestErrors from 'features/errors/TestError';
 import HomePage from 'features/home/HomePage';
+import ProfilePage from 'features/profiles/ProfilePage';
 import LoginForm from 'features/users/LoginForm';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
@@ -55,6 +56,11 @@ function App() {
                   path={['/createActivity', '/manage/:id']}
                   exact
                   component={ActivityForm}
+                />
+                <Route
+                  path="/profiles/:username"
+                  exact
+                  component={ProfilePage}
                 />
                 <Route path="/errors" exact component={TestErrors} />
                 <Route path="/server-error" exact component={ServerError} />
