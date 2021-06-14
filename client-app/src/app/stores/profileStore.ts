@@ -1,3 +1,4 @@
+import userEvent from '@testing-library/user-event';
 import agent from 'app/api/agent';
 import { Photo, Profile } from 'app/models/profile';
 import { makeAutoObservable, runInAction } from 'mobx';
@@ -118,6 +119,33 @@ export default class ProfileStore {
             (p) => p.id !== photo.id
           );
         }
+
+        this.loading = false;
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      runInAction(() => (this.loading = false));
+    }
+  };
+
+  updateProfile = async (profile: Partial<Profile>) => {
+    this.loading = true;
+
+    try {
+      await agent.Profiles.updateProfile(profile);
+
+      runInAction(() => {
+        if (
+          profile.displayName &&
+          profile.displayName !== store.userStore.user?.displayName
+        ) {
+          store.userStore.setDisplayName(profile.displayName);
+
+          this.profile = { ...this.profile, ...(profile as Profile) };
+        }
+
+        this.profile!.bio = profile.bio;
 
         this.loading = false;
       });
