@@ -42,6 +42,10 @@ namespace Application.Comments
 
             public async Task<Result<CommentDto>> Handle(Command request, CancellationToken cancellationToken)
             {
+
+                var validationResults = new CommandValidator().Validate(request);
+                if (validationResults.IsValid == false) return Result<CommentDto>.Failure("Failed to add comment");
+
                 var activity = await _context.Activities.FindAsync(request.ActivityId);
 
                 if (activity == null) return null;
