@@ -33,11 +33,22 @@ export default class CommentStore {
 
       // The string must match the backend side
       this.hubConnection.on('LoadComments', (comments: ChatComment[]) => {
-        runInAction(() => (this.comments = comments));
+        runInAction(() => {
+          comments.forEach((comment) => {
+            // 'Z' added to specify UTC timezone
+            comment.createdAt = new Date(comment.createdAt + 'Z');
+          });
+          this.comments = comments;
+        });
       });
 
+      // The backend will send the added comment to the client side using
+      // 'ReceiveComment' method
       this.hubConnection.on('ReceiveComment', (comment: ChatComment) => {
-        runInAction(() => this.comments.push(comment));
+        runInAction(() => {
+          comment.createdAt = new Date(comment.createdAt);
+          this.comments.unshift(comment);
+        });
       });
     }
   };
@@ -51,5 +62,16 @@ export default class CommentStore {
   clearComments = () => {
     this.comments = [];
     this.stopHubConnection();
+  };
+
+  addComment = async (values: any) => {
+    values.activityId = store.activityStore.selectedActivity?.id;
+
+    try {
+      // Invoke a function in the backend
+      await this.hubConnection?.invoke('SendComment', values);
+    } catch (error) {
+      console.log(error);
+    }
   };
 }

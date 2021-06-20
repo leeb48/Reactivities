@@ -1,4 +1,3 @@
-import userEvent from '@testing-library/user-event';
 import agent from 'app/api/agent';
 import { Photo, Profile } from 'app/models/profile';
 import { makeAutoObservable, runInAction } from 'mobx';

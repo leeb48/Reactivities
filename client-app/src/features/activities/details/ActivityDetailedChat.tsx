@@ -1,9 +1,11 @@
 import { useStore } from 'app/stores/store';
+import { formatDistanceToNow } from 'date-fns';
+import { Field, FieldProps, Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Comment, Form, Header, Segment } from 'semantic-ui-react';
+import { Comment, Header, Loader, Segment } from 'semantic-ui-react';
+import * as Yup from 'yup';
 
 interface Props {
   activityId: string;
@@ -27,15 +29,53 @@ const ActivityDetailedChat: React.FC<Props> = ({ activityId }) => {
   return (
     <>
       <Segment
-        textAlign="center"
-        attached="top"
+        textAlign='center'
+        attached='top'
         inverted
-        color="teal"
+        color='teal'
         style={{ border: 'none' }}
       >
         <Header>Chat about the event</Header>
       </Segment>
-      <Segment attached>
+      <Segment attached clearing>
+        <Formik
+          onSubmit={(values, { resetForm }) =>
+            commentStore.addComment(values).then(() => resetForm())
+          }
+          initialValues={{ body: '' }}
+          validationSchema={Yup.object({
+            body: Yup.string().required(),
+          })}
+        >
+          {({ isSubmitting, isValid, handleSubmit }) => (
+            <Form className='ui form'>
+              <Field name='body'>
+                {(props: FieldProps) => (
+                  <div style={{ position: 'relative' }}>
+                    <Loader active={isSubmitting} />
+                    <textarea
+                      placeholder='Enter Your Comment (Enter to submit, Shift + Enter for a new line)'
+                      rows={2}
+                      {...props.field}
+                      onKeyPress={(e) => {
+                        // Look for new line
+                        if (e.key === 'Enter' && e.shiftKey) {
+                          return;
+                        }
+
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          isValid && handleSubmit();
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </Field>
+            </Form>
+          )}
+        </Formik>
+
         <Comment.Group>
           {commentStore.comments.map((comment) => (
             <Comment key={comment.id}>
@@ -45,22 +85,14 @@ const ActivityDetailedChat: React.FC<Props> = ({ activityId }) => {
                   {comment.displayName}
                 </Comment.Author>
                 <Comment.Metadata>
-                  <div>{comment.createdAt}</div>
+                  <div>{formatDistanceToNow(comment.createdAt)} ago</div>
                 </Comment.Metadata>
-                <Comment.Text>{comment.body}</Comment.Text>
+                <Comment.Text style={{ whiteSpace: 'pre-wrap' }}>
+                  {comment.body}
+                </Comment.Text>
               </Comment.Content>
             </Comment>
           ))}
-
-          <Form reply>
-            <Form.TextArea />
-            <Button
-              content="Add Reply"
-              labelPosition="left"
-              icon="edit"
-              primary
-            />
-          </Form>
         </Comment.Group>
       </Segment>
     </>
