@@ -24,11 +24,11 @@ namespace Application.Activities
         //     }
         // }
 
-        public class Hanlder : IRequestHandler<Command, Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            public Hanlder(DataContext context, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper)
             {
                 _mapper = mapper;
                 _context = context;

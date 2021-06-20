@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using Application.Activities;
 using Application.Interfaces;
 using Infrastructure.Photos;
@@ -34,12 +36,18 @@ namespace API.Extensions
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                    policy
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .WithOrigins("http://localhost:3000");
                 });
             });
 
-            // Tells MediatR where to find the handler.
-            services.AddMediatR(typeof(List.Handler).Assembly);
+            // GetAssemblies includes all the handler assemblies
+            var handlerAssembly = AppDomain.CurrentDomain.Load("Application");
+            services.AddMediatR(handlerAssembly);
+            // services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
             // Add automapper
             services.AddAutoMapper(typeof(Application.Core.MappingProfiles).Assembly);
@@ -50,6 +58,8 @@ namespace API.Extensions
 
             // Use CloudinarySettings class to access settings set in application.json
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+
+            services.AddSignalR();
 
             return services;
         }
