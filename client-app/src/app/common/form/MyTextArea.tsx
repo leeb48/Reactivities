@@ -18,7 +18,7 @@ const MyTextArea: React.FC<Props> = (props) => {
       <label>{props.label}</label>
       <textarea {...field} {...props} />
       {meta.touched && meta.error ? (
-        <Label basic color="red">
+        <Label basic color='red'>
           {meta.error}
         </Label>
       ) : null}
