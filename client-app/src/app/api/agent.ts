@@ -1,6 +1,7 @@
 import { Activity, ActivityFormValues } from 'app/models/activity';
 import { PaginatedResult } from 'app/models/pagination';
 import { Photo, Profile } from 'app/models/profile';
+import { ProfileActivity } from 'app/models/profileActivity';
 import { User, UserFormValues } from 'app/models/user';
 import { store } from 'app/stores/store';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -121,6 +122,14 @@ const Account = {
 
 const Profiles = {
   get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
+
+  getActivityList: (username: string, params: URLSearchParams) =>
+    axios
+      .get<PaginatedResult<ProfileActivity[]>>(
+        `/profiles/${username}/activities`,
+        { params }
+      )
+      .then(responseBody),
 
   uploadPhoto: (file: Blob) => {
     let formData = new FormData();

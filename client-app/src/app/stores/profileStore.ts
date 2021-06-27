@@ -1,5 +1,7 @@
 import agent from 'app/api/agent';
+import { Pagination, PagingParams } from 'app/models/pagination';
 import { Photo, Profile } from 'app/models/profile';
+import { ProfileActivity } from 'app/models/profileActivity';
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { store } from './store';
 
@@ -11,6 +13,10 @@ export default class ProfileStore {
   followings: Profile[] = [];
   loadingFollowings = false;
   activeTab = 0;
+  profileActivity: ProfileActivity[] = [];
+  pagination: Pagination | null = null;
+  pagingParams = new PagingParams(1, 10);
+  predicate = new Map().set('predicate', 'all');
 
   constructor() {
     makeAutoObservable(this);
@@ -27,6 +33,49 @@ export default class ProfileStore {
         }
       }
     );
+  }
+
+  setPagination = (pagination: Pagination) => {
+    this.pagination = pagination;
+  };
+
+  setPagingParams = (pagingParams: PagingParams) => {
+    this.pagingParams = pagingParams;
+  };
+
+  setPredicate = (predicate: string) => {
+    const resetPredicate = () => {
+      this.predicate.forEach((value, key) => {
+        this.predicate.delete(key);
+      });
+    };
+
+    switch (predicate) {
+      case 'past':
+        resetPredicate();
+        this.predicate.set('predicate', 'past');
+        break;
+      case 'future':
+        resetPredicate();
+        this.predicate.set('predicate', 'future');
+        break;
+      case 'hosting':
+        resetPredicate();
+        this.predicate.set('predicate', 'hosting');
+        break;
+    }
+  };
+
+  get axiosPagingParams() {
+    const params = new URLSearchParams();
+    params.append('pageNumber', this.pagingParams.pageNumber.toString());
+    params.append('pageSize', this.pagingParams.pageSize.toString());
+
+    this.predicate.forEach((value, key) => {
+      params.append(key, value);
+    });
+
+    return params;
   }
 
   setActiveTab = (activeTab: any) => {
@@ -55,6 +104,21 @@ export default class ProfileStore {
       console.log(error);
     } finally {
       runInAction(() => (this.loadingProfile = false));
+    }
+  };
+
+  loadProfileActivities = async (username: string) => {
+    try {
+      const response = await agent.Profiles.getActivityList(
+        username,
+        this.axiosPagingParams
+      );
+
+      runInAction(() => {
+        this.profileActivity = response.data;
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 

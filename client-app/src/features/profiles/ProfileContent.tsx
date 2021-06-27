@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import ProfileAbout from './ProfileAbout';
+import ProfileEvents from './ProfileEvents';
 import ProfileFollowing from './ProfileFollowing';
 import ProfilePhotos from './ProfilePhotos';
 
@@ -17,7 +18,7 @@ const ProfileContent: React.FC<Props> = ({ profile }) => {
   const panes = [
     { menuItem: 'About', render: () => <ProfileAbout /> },
     { menuItem: 'Photo', render: () => <ProfilePhotos profile={profile} /> },
-    { menuItem: 'Events', render: () => <Tab.Pane>Events Content</Tab.Pane> },
+    { menuItem: 'Events', render: () => <ProfileEvents profile={profile} /> },
     {
       menuItem: 'Followers',
       render: () => <ProfileFollowing />,

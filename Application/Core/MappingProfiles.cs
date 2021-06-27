@@ -19,6 +19,10 @@ namespace Application.Core
                 .ForMember(d => d.HostUsername, opt => opt.MapFrom(s => s.Attendees
                     .FirstOrDefault(x => x.IsHost).AppUser.UserName));
 
+            CreateMap<Activity, Profiles.UserActivityDto>()
+                .ForMember(d => d.HostUsername, opt => opt.MapFrom(s => s.Attendees
+                    .FirstOrDefault(a => a.IsHost).AppUser.UserName));
+
             CreateMap<ActivityAttendee, AttendeeDto>()
                 .ForMember(d => d.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName))
                 .ForMember(d => d.Username, opt => opt.MapFrom(s => s.AppUser.UserName))
