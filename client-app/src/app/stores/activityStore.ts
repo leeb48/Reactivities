@@ -1,9 +1,10 @@
 import agent from 'app/api/agent';
 import { Activity, ActivityFormValues } from 'app/models/activity';
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { format } from 'date-fns';
 import { store } from './store';
 import { Profile } from 'app/models/profile';
+import { Pagination, PagingParams } from 'app/models/pagination';
 
 export default class ActivityStore {
   activityRegistry = new Map<string, Activity>();
@@ -11,9 +12,74 @@ export default class ActivityStore {
   editMode = false;
   loading = false;
   loadingInitial = false;
+  pagination: Pagination | null = null;
+  pagingParams = new PagingParams();
+  predicate = new Map().set('all', true);
 
   constructor() {
     makeAutoObservable(this);
+
+    reaction(
+      // observe the key changes and execute the reaction
+      () => this.predicate.keys(),
+      () => {
+        this.pagingParams = new PagingParams();
+        this.activityRegistry.clear();
+        this.loadActivities();
+      }
+    );
+  }
+
+  setPagination = (pagination: Pagination) => {
+    this.pagination = pagination;
+  };
+
+  setPagingParams = (pagingParams: PagingParams) => {
+    this.pagingParams = pagingParams;
+  };
+
+  setPredicate = (predicate: string, startDate?: string | Date) => {
+    const resetPredicate = () => {
+      this.predicate.forEach((value, key) => {
+        if (key !== 'startDate') this.predicate.delete(key);
+      });
+    };
+
+    switch (predicate) {
+      case 'all':
+        resetPredicate();
+        this.predicate.set('all', true);
+        break;
+      case 'isGoing':
+        resetPredicate();
+        this.predicate.set('isGoing', true);
+        break;
+      case 'isHost':
+        resetPredicate();
+        this.predicate.set('isHost', true);
+        break;
+      case 'startDate':
+        // deleting here will trigger the change detection
+        this.predicate.delete('startDate');
+        this.predicate.set('startDate', startDate);
+        break;
+    }
+  };
+
+  get axiosPagingParams() {
+    const params = new URLSearchParams();
+    params.append('pageNumber', this.pagingParams.pageNumber.toString());
+    params.append('pageSize', this.pagingParams.pageSize.toString());
+
+    this.predicate.forEach((value, key) => {
+      if (key === 'startDate') {
+        params.append(key, (value as Date).toISOString());
+      } else {
+        params.append(key, value);
+      }
+    });
+
+    return params;
   }
 
   get activitiesByDate() {
@@ -65,12 +131,15 @@ export default class ActivityStore {
   loadActivities = async () => {
     this.setLoadingInitial(true);
     try {
-      (await agent.Activities.list()).forEach((activity) => {
+      const result = await agent.Activities.list(this.axiosPagingParams);
+      result.data.forEach((activity) => {
         this.setActivity(activity);
       });
-      this.setLoadingInitial(false);
+
+      this.setPagination(result.pagination);
     } catch (error) {
       console.log(error);
+    } finally {
       this.setLoadingInitial(false);
     }
   };
