@@ -44,6 +44,8 @@ namespace Application.Activities
                 var user = await _context.Users.FirstOrDefaultAsync(x =>
                  x.UserName == _userAccessor.GetUsername());
 
+                request.Activity.Date = request.Activity.Date.ToUniversalTime();
+
                 // ActivityAttendee is the joined table record that connects the users and activities
                 // (creates many to many relationship between users and activities)
                 var hostAttendee = new ActivityAttendee

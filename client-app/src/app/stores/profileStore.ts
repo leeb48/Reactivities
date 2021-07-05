@@ -1,7 +1,6 @@
 import agent from 'app/api/agent';
 import { Pagination, PagingParams } from 'app/models/pagination';
-import { Photo, Profile } from 'app/models/profile';
-import { ProfileActivity } from 'app/models/profileActivity';
+import { Photo, Profile, ProfileActivity } from 'app/models/profile';
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { store } from './store';
 
@@ -51,6 +50,10 @@ export default class ProfileStore {
     };
 
     switch (predicate) {
+      case 'all':
+        resetPredicate();
+        this.predicate.set('predicate', 'all');
+        break;
       case 'past':
         resetPredicate();
         this.predicate.set('predicate', 'past');
@@ -107,10 +110,12 @@ export default class ProfileStore {
     }
   };
 
-  loadProfileActivities = async (username: string) => {
+  loadProfileActivities = async () => {
     try {
+      this.loading = true;
+
       const response = await agent.Profiles.getActivityList(
-        username,
+        this.profile!.username,
         this.axiosPagingParams
       );
 
@@ -119,6 +124,8 @@ export default class ProfileStore {
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      runInAction(() => (this.loading = false));
     }
   };
 

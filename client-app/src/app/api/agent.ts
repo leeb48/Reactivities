@@ -1,7 +1,6 @@
 import { Activity, ActivityFormValues } from 'app/models/activity';
 import { PaginatedResult } from 'app/models/pagination';
-import { Photo, Profile } from 'app/models/profile';
-import { ProfileActivity } from 'app/models/profileActivity';
+import { Photo, Profile, ProfileActivity } from 'app/models/profile';
 import { User, UserFormValues } from 'app/models/user';
 import { store } from 'app/stores/store';
 import axios, { AxiosError, AxiosResponse } from 'axios';

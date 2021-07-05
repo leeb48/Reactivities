@@ -182,7 +182,11 @@ export default class ActivityStore {
     const attendee = new Profile(user!);
 
     try {
-      await agent.Activities.create(activity);
+      await agent.Activities.create({
+        ...activity,
+        // z is added to indicate UTC time
+        date: new Date(activity.date + 'z'),
+      });
 
       const newActivity = new Activity(activity);
       newActivity.hostUsername = user!.username;

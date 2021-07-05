@@ -15,6 +15,7 @@ namespace Application.Profiles
     {
         public class Query : IRequest<Result<PagedList<UserActivityDto>>>
         {
+            public string Username { get; set; }
             public UserActivityParams Params { get; set; }
         }
 
@@ -22,10 +23,8 @@ namespace Application.Profiles
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            private readonly IUserAccessor _userAccessor;
-            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
+            public Handler(DataContext context, IMapper mapper)
             {
-                _userAccessor = userAccessor;
                 _mapper = mapper;
                 _context = context;
             }
@@ -33,26 +32,20 @@ namespace Application.Profiles
             public async Task<Result<PagedList<UserActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = _context.Activities
-                    .Where(x => x.Attendees.Any(a => a.AppUser.UserName == _userAccessor.GetUsername()))
+                    .Where(x => x.Attendees.Any(a => a.AppUser.UserName == request.Username))
                     .OrderBy(a => a.Date)
                     .ProjectTo<UserActivityDto>(_mapper.ConfigurationProvider)
                     .AsQueryable();
 
 
-                if (request.Params.Predicate == "past")
+                query = request.Params.Predicate switch
                 {
-                    query = query.Where(x => x.Date < DateTime.UtcNow);
-                }
+                    "past" => query.Where(x => x.Date < DateTime.UtcNow),
+                    "future" => query.Where(x => x.Date >= DateTime.UtcNow),
+                    "hosting" => query.Where(x => x.HostUsername == request.Username),
+                    _ => query,
+                };
 
-                if (request.Params.Predicate == "future")
-                {
-                    query = query.Where(x => x.Date >= DateTime.UtcNow);
-                }
-
-                if (request.Params.Predicate == "hosting")
-                {
-                    query = query.Where(x => x.HostUsername == _userAccessor.GetUsername());
-                }
 
                 return Result<PagedList<UserActivityDto>>.Success(
                     await PagedList<UserActivityDto>.CreateAsync(query, request.Params.PageNumber, request.Params.PageSize)

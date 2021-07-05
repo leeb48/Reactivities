@@ -50,6 +50,7 @@ const ActivityForm = () => {
         ...activity,
         id: uuid(),
       };
+
       await createActivity(newActivity);
 
       history.push(`/activities/${newActivity.id}`);
@@ -59,11 +60,11 @@ const ActivityForm = () => {
     }
   }
 
-  if (loadingInitial) return <LoadingComponent content="Loading Activity..." />;
+  if (loadingInitial) return <LoadingComponent content='Loading Activity...' />;
 
   return (
     <Segment clearing>
-      <Header contnet="Activity Details" sub color="teal" />
+      <Header contnet='Activity Details' sub color='teal' />
       <Formik
         validationSchema={validationSchema}
         enableReinitialize
@@ -71,40 +72,40 @@ const ActivityForm = () => {
         onSubmit={(values) => handleFormSubmit(values)}
       >
         {({ handleSubmit, isValid, isSubmitting, dirty }) => (
-          <Form className="ui form" onSubmit={handleSubmit} autoComplete="off">
-            <MyTextInput name="title" placeholder="Title" />
-            <MyTextArea rows={3} placeholder="Description" name="description" />
+          <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
+            <MyTextInput name='title' placeholder='Title' />
+            <MyTextArea rows={3} placeholder='Description' name='description' />
             <MySelectInput
               options={categoryOptions}
-              placeholder="Category"
-              name="category"
+              placeholder='Category'
+              name='category'
             />
             <MyDateInput
-              placeholderText="Date"
-              name="date"
+              placeholderText='Date'
+              name='date'
               showTimeSelect
-              timeCaption="time"
-              dateFormat="MMMM d, yyyy h:mm aa"
+              timeCaption='time'
+              dateFormat='MMMM d, yyyy h:mm aa'
             />
-            <MyTextInput placeholder="City" name="city" />
-            <MyTextInput placeholder="Venue" name="venue" />
+            <MyTextInput placeholder='City' name='city' />
+            <MyTextInput placeholder='Venue' name='venue' />
 
-            <Header contnet="Location Details" sub color="teal" />
+            <Header contnet='Location Details' sub color='teal' />
             <Button
               // Dirty is true if user has changed the form values
               disabled={isSubmitting || !dirty || !isValid}
               loading={isSubmitting}
-              floated="right"
+              floated='right'
               positive
-              type="submit"
-              content="Submit"
+              type='submit'
+              content='Submit'
             />
             <Button
               as={Link}
-              to="/activities"
-              floated="right"
-              type="button"
-              content="Cancel"
+              to='/activities'
+              floated='right'
+              type='button'
+              content='Cancel'
             />
           </Form>
         )}

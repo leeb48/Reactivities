@@ -18,7 +18,7 @@ const ProfileContent: React.FC<Props> = ({ profile }) => {
   const panes = [
     { menuItem: 'About', render: () => <ProfileAbout /> },
     { menuItem: 'Photo', render: () => <ProfilePhotos profile={profile} /> },
-    { menuItem: 'Events', render: () => <ProfileEvents profile={profile} /> },
+    { menuItem: 'Events', render: () => <ProfileEvents /> },
     {
       menuItem: 'Followers',
       render: () => <ProfileFollowing />,
